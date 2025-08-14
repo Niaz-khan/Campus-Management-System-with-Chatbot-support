@@ -9,10 +9,10 @@ An AI-driven, multilingual campus management system built using Django, integrat
 ### 🧩 Core Functional Modules
 - **Admissions Management** – Online student application and acceptance workflow.
 - **Student Information System (SIS)** – Role-based access with student, faculty, and admin dashboards.
+- **Student Transcript View** - Students can see their GPA, grades, and semester records.
 - **Course Management** – Course creation, semester allocation, credit tracking.
 - **Enrollment & Promotion** – Auto-enroll into semester courses and promote based on exam results.
 - **Exam & GPA System** – Enter exam results, auto-calculate GPA & CGPA.
-- **Transcript Generation** – View live transcript with marks and grades.
 - **Fee & Faculty Management** – Extendable to handle financials and faculty operations.
 
 ### 🤖 AI Chatbot (Built with Hugging Face & PyTorch)
@@ -41,6 +41,7 @@ An AI-driven, multilingual campus management system built using Django, integrat
 ---
 
 ## 📁 Project Structure
+
 
 CMS_PROJECT/ 
 │ 

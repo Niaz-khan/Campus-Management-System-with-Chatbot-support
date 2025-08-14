@@ -1,14 +1,15 @@
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
 from .llm import handle_real_data
+from .forms import ChatForm
 
-@csrf_exempt
 def chatbot_view(request):
+    answer = None
     if request.method == 'POST':
-        question = request.POST.get('question')
-        if question:
+        form = ChatForm(request.POST)
+        if form.is_valid():
+            question = form.cleaned_data['question']
             answer = handle_real_data(question, request.user)
-            return HttpResponse(answer)
-    return HttpResponse('')
+    else:
+        form = ChatForm()
 
+    return render(request, 'chatbot/chatbot.html', {'form': form, 'answer': answer})

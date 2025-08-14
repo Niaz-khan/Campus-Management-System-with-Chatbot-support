@@ -13,6 +13,18 @@ qa_pipeline = pipeline(
     device=0 if torch.cuda.is_available() else -1
 )
 
+# Load translation models (Urdu)
+en_to_ur_translator = pipeline("translation_en_to_ur", 
+    model="Helsinki-NLP/opus-mt-en-ur",
+    device=0 if torch.cuda.is_available() else -1
+)
+
+ur_to_en_translator = pipeline("translation_ur_to_en", 
+    model="Helsinki-NLP/opus-mt-ur-en",
+    device=0 if torch.cuda.is_available() else -1
+
+)
+
 def detect_language(text):
     try:
         lang = detect(text)
@@ -40,10 +52,25 @@ def detect_intent(question):
         return "general"
 
 def ask_huggingface_model(question, context="Smart University Management System. Students are enrolled in courses and promoted semester by semester. GPA is calculated based on marks."):
-    response = qa_pipeline(question=question, context=context)
+    detected_lang = detect_language(question)
+    english_question = question # Assume English by default
+
+    if detected_lang == 'ur':
+        english_question = ur_to_en_translator(question)[0]['translation_text']
+        print(f"Translated Urdu to English: {english_question}")
+    elif detected_lang == 'ps':
+        return "Sorry, Pashto translation is not supported right now." # Fallback for Pashto
+
+    response = qa_pipeline(question=english_question, context=context)
     english_answer = response['answer']
     print(f"English Answer: {english_answer}")
-    return english_answer
+
+    if detected_lang == 'ur':
+        final_answer = en_to_ur_translator(english_answer)[0]['translation_text']
+        print(f"Translated English to Urdu: {final_answer}")
+        return final_answer
+
+    return english_answer # Return English answer for English or other languages
 
 def handle_real_data(question, user=None):
     intent = detect_intent(question)
@@ -60,8 +87,6 @@ def handle_real_data(question, user=None):
         return generate_transcript_summary(user)
     else:
         return ask_huggingface_model(question)
-    
-    return ask_huggingface_model(question)
 
 
 
