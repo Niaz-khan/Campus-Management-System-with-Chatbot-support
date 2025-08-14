@@ -1,0 +1,9 @@
+Django
+djangorestframework
+psycopg2-binary
+langdetect
+transformers
+sentencepiece
+torch
+torchvision
+torchaudio
