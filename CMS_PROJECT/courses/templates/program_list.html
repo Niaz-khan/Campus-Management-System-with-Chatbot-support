@@ -1,0 +1,7 @@
+<h2>Programs</h2>
+<a href="{% url 'add_program' %}">+ Add Program</a>
+<ul>
+  {% for p in programs %}
+    <li>{{ p.program_name }} ({{ p.department }}) – {{ p.duration_years }} years</li>
+  {% endfor %}
+</ul>

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Admin Dashboard</h2>
+<ul>
+    <li><a href="{% url 'view_applications' %}">View Admission Applications</a></li>
+    <li><a href="{% url 'list_students' %}">View Students</a></li>
+    <li><a href="{% url 'list_programs' %}">Manage Programs</a></li>
+    <li><a href="{% url 'list_courses' %}">Manage Courses</a></li>
+    <li><a href="{% url 'chatbot_chat' %}">Ask Chatbot</a></li>
+</ul>
+{% endblock %}

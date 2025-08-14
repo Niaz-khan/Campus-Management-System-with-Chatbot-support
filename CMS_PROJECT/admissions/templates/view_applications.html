@@ -1,0 +1,28 @@
+<h2>All Admission Applications</h2>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Program</th>
+            <th>Status</th>
+            <th>Applied On</th>
+            <th>Marks (Matric)</th>
+            <th>Marks (Inter)</th>
+            <th>Quota</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for app in applications %}
+        <tr>
+            <td>{{ app.student.user.get_full_name }}</td>
+            <td>{{ app.program.program_name }}</td>
+            <td>{{ app.get_status_display }}</td>
+            <td>{{ app.applied_on }}</td>
+            <td>{{ app.matric_marks }}</td>
+            <td>{{ app.intermediate_marks }}</td>
+            <td>{{ app.quota }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
