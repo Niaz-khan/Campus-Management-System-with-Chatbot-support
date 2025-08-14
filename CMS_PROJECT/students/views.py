@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Student
+from .models import Student # Assuming Student model is in .models
+from enrollments.models import Enrollment # Assuming Enrollment model is in enrollments.models
 from .forms import StudentForm
 
 @login_required
@@ -33,3 +34,16 @@ def add_student(request):
     else:
         form = StudentForm()
     return render(request, 'add.html', {'form': form})
+
+@login_required
+def student_transcript_view(request):
+    """
+    View to display the logged-in student's transcript.
+    """
+    # Fetch the logged-in student's data
+    student = request.user.student
+
+    # Fetch the student's enrollments and course grades
+    # This will likely involve querying the Enrollment and ExamResult models
+
+    return render(request, 'students/transcript.html', {'student': student, 'transcript_data': {}}) # Pass transcript_data to template
