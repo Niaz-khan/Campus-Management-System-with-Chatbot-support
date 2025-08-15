@@ -1,7 +1,6 @@
 from django.apps import AppConfig
 
-
-class ExamsConfig(AppConfig):
+class FeesConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'exams'
-    verbose_name = 'Exam Management'
+    name = 'fees'
+    verbose_name = 'Fee Management'

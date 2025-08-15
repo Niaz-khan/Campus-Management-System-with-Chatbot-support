@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Exams{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Exams</h4>
+                    <a href="{% url 'admin:exams_exam_add' %}" class="btn btn-primary">Add Exam</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Course</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Venue</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for exam in exams %}
+                                <tr>
+                                    <td>{{ exam.title }}</td>
+                                    <td>{{ exam.course.course_code }} - {{ exam.course.course_name }}</td>
+                                    <td><span class="badge bg-info">{{ exam.get_exam_type_display }}</span></td>
+                                    <td>{{ exam.exam_date }}</td>
+                                    <td>{{ exam.start_time }} - {{ exam.end_time }}</td>
+                                    <td>{{ exam.venue|default:"-" }}</td>
+                                    <td>
+                                        {% if exam.status == 'draft' %}
+                                            <span class="badge bg-secondary">Draft</span>
+                                        {% elif exam.status == 'published' %}
+                                            <span class="badge bg-success">Published</span>
+                                        {% elif exam.status == 'ongoing' %}
+                                            <span class="badge bg-warning">Ongoing</span>
+                                        {% elif exam.status == 'completed' %}
+                                            <span class="badge bg-primary">Completed</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Cancelled</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'admin:exams_exam_change' exam.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                        <a href="{% url 'admin:exams_exam_delete' exam.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center">No exams found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

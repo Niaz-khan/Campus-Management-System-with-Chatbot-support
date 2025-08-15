@@ -1,10 +1,19 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import (
+    ExamViewSet, ExamScheduleViewSet, ExamResultViewSet,
+    GradeViewSet, TranscriptViewSet, ExamAttendanceViewSet, ExamAnalyticsViewSet
+)
+
+router = DefaultRouter()
+router.register(r'exams', ExamViewSet)
+router.register(r'schedules', ExamScheduleViewSet)
+router.register(r'results', ExamResultViewSet)
+router.register(r'grades', GradeViewSet)
+router.register(r'transcripts', TranscriptViewSet)
+router.register(r'attendance', ExamAttendanceViewSet)
+router.register(r'analytics', ExamAnalyticsViewSet, basename='exam-analytics')
 
 urlpatterns = [
-    path('exams/', views.list_exams, name='list_exams'),
-    path('exams/add/', views.create_exam, name='create_exam'),
-    path('results/', views.list_exam_results, name='list_exam_results'),
-    path('results/add/', views.add_exam_result, name='add_exam_result'),
-    path('transcript/', views.my_transcript, name='my_transcript'),
+    path('', include(router.urls)),
 ]
