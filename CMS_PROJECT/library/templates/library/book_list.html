@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block title %}Library Books{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4><i class="fas fa-book"></i> Library Books</h4>
+                    <div>
+                        <a href="{% url 'admin:library_book_add' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Book
+                        </a>
+                        <a href="{% url 'admin:library_author_add' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-plus"></i> Add Author
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Search Form -->
+                    <form method="get" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="text" name="query" class="form-control" placeholder="Search books..." value="{{ request.GET.query }}">
+                            </div>
+                            <div class="col-md-3">
+                                <select name="category" class="form-control">
+                                    <option value="">All Categories</option>
+                                    {% for category in categories %}
+                                    <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ category.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="book_type" class="form-control">
+                                    <option value="">All Types</option>
+                                    <option value="textbook" {% if request.GET.book_type == 'textbook' %}selected{% endif %}>Textbook</option>
+                                    <option value="reference" {% if request.GET.book_type == 'reference' %}selected{% endif %}>Reference</option>
+                                    <option value="fiction" {% if request.GET.book_type == 'fiction' %}selected{% endif %}>Fiction</option>
+                                    <option value="non_fiction" {% if request.GET.book_type == 'non_fiction' %}selected{% endif %}>Non-Fiction</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Books Grid -->
+                    <div class="row">
+                        {% for book in books %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100">
+                                {% if book.cover_image %}
+                                <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}" style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-book fa-3x text-muted"></i>
+                                </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ book.title }}</h6>
+                                    {% if book.subtitle %}
+                                    <p class="card-text text-muted small">{{ book.subtitle }}</p>
+                                    {% endif %}
+                                    
+                                    <div class="mb-2">
+                                        <span class="badge bg-primary">{{ book.get_book_type_display }}</span>
+                                        <span class="badge bg-info">{{ book.category.name }}</span>
+                                        {% if book.available_copies > 0 %}
+                                        <span class="badge bg-success">{{ book.available_copies }} available</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Unavailable</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <p class="card-text small">
+                                        <strong>Authors:</strong> 
+                                        {% for author in book.authors.all %}
+                                        {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </p>
+                                    
+                                    {% if book.isbn %}
+                                    <p class="card-text small">
+                                        <strong>ISBN:</strong> {{ book.isbn }}
+                                    </p>
+                                    {% endif %}
+                                    
+                                    <p class="card-text small">
+                                        <strong>Location:</strong> {{ book.location|default:"Not specified" }}
+                                    </p>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            {{ book.total_copies }} total copies
+                                        </small>
+                                        <div>
+                                            <a href="{% url 'admin:library_book_change' book.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'admin:library_book_delete' book.id %}" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <div class="text-center py-5">
+                                <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No books found</h5>
+                                <p class="text-muted">Try adjusting your search criteria or add some books to get started.</p>
+                                <a href="{% url 'admin:library_book_add' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Add Your First Book
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if books.has_other_pages %}
+                    <nav aria-label="Books pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if books.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ books.previous_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.book_type %}&book_type={{ request.GET.book_type }}{% endif %}">
+                                    <i class="fas fa-chevron-left"></i> Previous
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for num in books.paginator.page_range %}
+                            {% if books.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% elif num > books.number|add:'-3' and num < books.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.book_type %}&book_type={{ request.GET.book_type }}{% endif %}">
+                                    {{ num }}
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+                            
+                            {% if books.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ books.next_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.book_type %}&book_type={{ request.GET.book_type }}{% endif %}">
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

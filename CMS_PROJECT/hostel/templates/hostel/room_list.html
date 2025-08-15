@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}Room Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4><i class="fas fa-door-open"></i> Room Management</h4>
+                    <div>
+                        <a href="{% url 'admin:hostel_room_add' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Room
+                        </a>
+                        <a href="{% url 'admin:hostel_hostel_add' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-building"></i> Add Hostel
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Search Form -->
+                    <form method="get" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <select name="hostel" class="form-control">
+                                    <option value="">All Hostels</option>
+                                    {% for hostel in hostels %}
+                                    <option value="{{ hostel.id }}" {% if request.GET.hostel == hostel.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ hostel.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select name="room_type" class="form-control">
+                                    <option value="">All Types</option>
+                                    <option value="single" {% if request.GET.room_type == 'single' %}selected{% endif %}>Single</option>
+                                    <option value="double" {% if request.GET.room_type == 'double' %}selected{% endif %}>Double</option>
+                                    <option value="triple" {% if request.GET.room_type == 'triple' %}selected{% endif %}>Triple</option>
+                                    <option value="quad" {% if request.GET.room_type == 'quad' %}selected{% endif %}>Quad</option>
+                                    <option value="dormitory" {% if request.GET.room_type == 'dormitory' %}selected{% endif %}>Dormitory</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" name="floor" class="form-control" placeholder="Floor" value="{{ request.GET.floor }}">
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    <input type="checkbox" name="available_only" class="form-check-input" id="available_only" {% if request.GET.available_only %}checked{% endif %}>
+                                    <label class="form-check-label" for="available_only">Available Only</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" name="max_price" class="form-control" placeholder="Max Price" step="0.01" value="{{ request.GET.max_price }}">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Statistics Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">{{ total_rooms }}</h5>
+                                    <p class="card-text">Total Rooms</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">{{ available_rooms }}</h5>
+                                    <p class="card-text">Available Rooms</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">{{ occupied_rooms }}</h5>
+                                    <p class="card-text">Occupied Rooms</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">{{ maintenance_rooms }}</h5>
+                                    <p class="card-text">Under Maintenance</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rooms Table -->
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Room</th>
+                                    <th>Hostel</th>
+                                    <th>Type</th>
+                                    <th>Floor</th>
+                                    <th>Capacity</th>
+                                    <th>Occupied</th>
+                                    <th>Status</th>
+                                    <th>Monthly Rent</th>
+                                    <th>Amenities</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for room in rooms %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ room.room_number }}</strong>
+                                    </td>
+                                    <td>{{ room.hostel.name }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ room.get_room_type_display }}</span>
+                                    </td>
+                                    <td>{{ room.floor }}</td>
+                                    <td>{{ room.capacity }}</td>
+                                    <td>
+                                        {% if room.occupied > 0 %}
+                                        <span class="text-primary">{{ room.occupied }}</span>
+                                        {% else %}
+                                        <span class="text-muted">0</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if room.status == 'available' %}
+                                        <span class="badge bg-success">Available</span>
+                                        {% elif room.status == 'occupied' %}
+                                        <span class="badge bg-warning">Occupied</span>
+                                        {% elif room.status == 'maintenance' %}
+                                        <span class="badge bg-danger">Maintenance</span>
+                                        {% elif room.status == 'reserved' %}
+                                        <span class="badge bg-info">Reserved</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ room.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>${{ room.monthly_rent }}</td>
+                                    <td>
+                                        {% if room.is_ac %}
+                                        <span class="badge bg-info">AC</span>
+                                        {% endif %}
+                                        {% if room.is_attached_bathroom %}
+                                        <span class="badge bg-info">Bathroom</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'admin:hostel_room_change' room.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'admin:hostel_student_add' %}?room={{ room.id }}" class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-user-plus"></i>
+                                            </a>
+                                            <a href="{% url 'admin:hostel_room_delete' room.id %}" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="10" class="text-center py-5">
+                                        <i class="fas fa-door-open fa-3x text-muted mb-3"></i>
+                                        <h5 class="text-muted">No rooms found</h5>
+                                        <p class="text-muted">Try adjusting your search criteria or add some rooms to get started.</p>
+                                        <a href="{% url 'admin:hostel_room_add' %}" class="btn btn-primary">
+                                            <i class="fas fa-plus"></i> Add Your First Room
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if rooms.has_other_pages %}
+                    <nav aria-label="Rooms pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if rooms.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ rooms.previous_page_number }}{% if request.GET.hostel %}&hostel={{ request.GET.hostel }}{% endif %}{% if request.GET.room_type %}&room_type={{ request.GET.room_type }}{% endif %}{% if request.GET.floor %}&floor={{ request.GET.floor }}{% endif %}{% if request.GET.available_only %}&available_only={{ request.GET.available_only }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}">
+                                    <i class="fas fa-chevron-left"></i> Previous
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for num in rooms.paginator.page_range %}
+                            {% if rooms.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% elif num > rooms.number|add:'-3' and num < rooms.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if request.GET.hostel %}&hostel={{ request.GET.hostel }}{% endif %}{% if request.GET.room_type %}&room_type={{ request.GET.room_type }}{% endif %}{% if request.GET.floor %}&floor={{ request.GET.floor }}{% endif %}{% if request.GET.available_only %}&available_only={{ request.GET.available_only }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}">
+                                    {{ num }}
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+                            
+                            {% if rooms.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ rooms.next_page_number }}{% if request.GET.hostel %}&hostel={{ request.GET.hostel }}{% endif %}{% if request.GET.room_type %}&room_type={{ request.GET.room_type }}{% endif %}{% if request.GET.floor %}&floor={{ request.GET.floor }}{% endif %}{% if request.GET.available_only %}&available_only={{ request.GET.available_only }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}">
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
