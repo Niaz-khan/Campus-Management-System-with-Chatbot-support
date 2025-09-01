@@ -3,7 +3,31 @@ from django.conf import settings
 from datetime import timedelta, date
 from courses.models import Course
 from enrollments.models import Enrollment
-from .utils import percentage_to_grade_point
+
+def percentage_to_grade_point(percentage: float) -> float:
+    """
+    Converts percentage to grade point based on a standard 4.0 scale.
+    Adjust scale according to university policy if needed.
+    """
+    if percentage >= 85:
+        return 4.0
+    elif percentage >= 80:
+        return 3.7
+    elif percentage >= 75:
+        return 3.3
+    elif percentage >= 70:
+        return 3.0
+    elif percentage >= 65:
+        return 2.7
+    elif percentage >= 60:
+        return 2.3
+    elif percentage >= 55:
+        return 2.0
+    elif percentage >= 50:
+        return 1.7
+    else:
+        return 0.0
+
 
 class Exam(models.Model):
     EXAM_TYPES = [
@@ -40,7 +64,7 @@ class Exam(models.Model):
     def grading_deadline(self):
         return self.date + timedelta(days=self.grading_deadline_days)
 
-    def can_accept_grades(self):def grade_point(self):
+    def grade_point(self):
         """Returns the grade points earned for this exam based on marks percentage."""
         percentage = (self.marks_obtained / self.exam.total_marks) * 100
         return percentage_to_grade_point(percentage) * self.enrollment.course.credit_hours
@@ -57,7 +81,7 @@ class Exam(models.Model):
         """
         Students can only view grades if results are published or locked.
         """
-        return self.result_status in ['PUBLISHED', 'LOCKED'
+        return self.result_status in ['PUBLISHED', 'LOCKED']
 
     def __str__(self):
         return f"{self.title} - {self.course.code}"

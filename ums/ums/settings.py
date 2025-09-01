@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'faculty',
     'attendance',
     'exams',
+    'notifications',
 ]
 
 MIDDLEWARE = [
