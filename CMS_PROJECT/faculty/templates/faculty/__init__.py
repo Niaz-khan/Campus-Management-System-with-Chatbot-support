@@ -1,1 +1,0 @@
-# Faculty templates package

@@ -1,1 +1,0 @@
-# Exams templates package

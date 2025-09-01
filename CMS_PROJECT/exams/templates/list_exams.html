@@ -1,6 +1,0 @@
-<h2>All Exams</h2>
-<ul>
-    {% for exam in exams %}
-    <li>{{ exam.course.course_code }} - {{ exam.get_exam_type_display }} - {{ exam.date }}</li>
-    {% endfor %}
-</ul>
