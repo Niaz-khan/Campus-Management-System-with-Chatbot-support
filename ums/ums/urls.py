@@ -19,4 +19,6 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # Users API
+    path('api/users/', include('users.urls')),
 ]
