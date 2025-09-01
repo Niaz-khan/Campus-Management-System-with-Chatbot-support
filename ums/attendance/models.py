@@ -24,7 +24,7 @@ class Attendance(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ("enrollment", "date")  # One attendance per student per date
+        unique_together = ("enrollment", "date")
         ordering = ['-date']
 
     def __str__(self):
