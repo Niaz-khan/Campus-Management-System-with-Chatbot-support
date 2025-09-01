@@ -12,6 +12,22 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Exam
 from users.permissions import IsFaculty, IsAdmin
+from notifications.utils import send_notification
+from enrollments.models import Enrollment
+
+
+def perform_create(self, serializer):
+    exam = serializer.save(created_by=self.request.user)
+    # Notify all students enrolled in the course
+    enrollments = Enrollment.objects.filter(course=exam.course)
+    for enrollment in enrollments:
+        send_notification(
+            user=enrollment.student.user,
+            title="New Exam Scheduled",
+            message=f"A new exam '{exam.title}' has been scheduled for {exam.date}.",
+            related_object=exam
+        )
+
 
 class PublishExamResultsView(APIView):
     """
@@ -20,16 +36,17 @@ class PublishExamResultsView(APIView):
     permission_classes = [IsFaculty | IsAdmin]
 
     def post(self, request, exam_id):
-        try:
-            exam = Exam.objects.get(id=exam_id)
-        except Exam.DoesNotExist:
-            return Response({"error": "Exam not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        if exam.result_status != 'DRAFT':
-            return Response({"error": "Exam is already published or locked."}, status=status.HTTP_400_BAD_REQUEST)
-
         exam.result_status = 'PUBLISHED'
         exam.save(update_fields=['result_status'])
+
+        enrollments = Enrollment.objects.filter(course=exam.course)
+        for enrollment in enrollments:
+            send_notification(
+                user=enrollment.student.user,
+                title="Exam Results Published",
+                message=f"Your results for '{exam.title}' are now available.",
+                related_object=exam
+            )
         return Response({"message": f"Results for {exam.title} published."})
 
 
@@ -38,18 +55,18 @@ class LockExamResultsView(APIView):
     Admin: Lock exam results (no further edits allowed).
     """
     permission_classes = [IsAdmin]
-
     def post(self, request, exam_id):
-        try:
-            exam = Exam.objects.get(id=exam_id)
-        except Exam.DoesNotExist:
-            return Response({"error": "Exam not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        if exam.result_status != 'PUBLISHED':
-            return Response({"error": "Exam must be published before locking."}, status=status.HTTP_400_BAD_REQUEST)
-
         exam.result_status = 'LOCKED'
         exam.save(update_fields=['result_status'])
+
+        enrollments = Enrollment.objects.filter(course=exam.course)
+        for enrollment in enrollments:
+            send_notification(
+                user=enrollment.student.user,
+                title="Exam Results Locked",
+                message=f"Results for '{exam.title}' are now locked. No further changes will be made.",
+                related_object=exam
+            )
         return Response({"message": f"Results for {exam.title} locked."})
 
 
