@@ -1,9 +1,96 @@
 from rest_framework import generics
-from .models import Exam
-from .serializers import ExamSerializer
+from .models import Exam, Grade
+from .serializers import ExamSerializer, GradeSerializer
 from users.permissions import IsAdmin, IsFaculty, IsStudent
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from .models import Grade
+from enrollments.models import Enrollment
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Exam
+from users.permissions import IsFaculty, IsAdmin
 
-# Admin & Faculty: List and create exams
+class PublishExamResultsView(APIView):
+    """
+    Faculty/Admin: Publish exam results so students can view grades.
+    """
+    permission_classes = [IsFaculty | IsAdmin]
+
+    def post(self, request, exam_id):
+        try:
+            exam = Exam.objects.get(id=exam_id)
+        except Exam.DoesNotExist:
+            return Response({"error": "Exam not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if exam.result_status != 'DRAFT':
+            return Response({"error": "Exam is already published or locked."}, status=status.HTTP_400_BAD_REQUEST)
+
+        exam.result_status = 'PUBLISHED'
+        exam.save(update_fields=['result_status'])
+        return Response({"message": f"Results for {exam.title} published."})
+
+
+class LockExamResultsView(APIView):
+    """
+    Admin: Lock exam results (no further edits allowed).
+    """
+    permission_classes = [IsAdmin]
+
+    def post(self, request, exam_id):
+        try:
+            exam = Exam.objects.get(id=exam_id)
+        except Exam.DoesNotExist:
+            return Response({"error": "Exam not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if exam.result_status != 'PUBLISHED':
+            return Response({"error": "Exam must be published before locking."}, status=status.HTTP_400_BAD_REQUEST)
+
+        exam.result_status = 'LOCKED'
+        exam.save(update_fields=['result_status'])
+        return Response({"message": f"Results for {exam.title} locked."})
+
+
+class MyGPAView(APIView):
+    """
+    GET: Returns the GPA for the current semester and overall CGPA for the logged-in student.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        student = request.user.student_profile
+
+        # Get all grades for this student
+        all_grades = Grade.objects.filter(enrollment__student=student)
+
+        if not all_grades.exists():
+            return Response({"message": "No grades available."})
+
+        total_points = 0
+        total_credits = 0
+
+        for grade in all_grades:
+            total_points += grade.grade_point()
+            total_credits += grade.enrollment.course.credit_hours
+
+        cgpa = round(total_points / total_credits, 2) if total_credits > 0 else 0
+
+        # Optional: calculate GPA for current semester
+        current_semester = student.semester
+        semester_grades = all_grades.filter(enrollment__semester=current_semester)
+        sem_points = sum(g.grade_point() for g in semester_grades)
+        sem_credits = sum(g.enrollment.course.credit_hours for g in semester_grades)
+        gpa = round(sem_points / sem_credits, 2) if sem_credits > 0 else cgpa
+
+        return Response({
+            "GPA": gpa,
+            "CGPA": cgpa,
+            "credits_completed": total_credits
+        })
+
+# EXAMS MANAGEMENT
 class ExamListCreateView(generics.ListCreateAPIView):
     """
     GET: List all exams (Admin, Faculty, Students)
@@ -20,7 +107,6 @@ class ExamListCreateView(generics.ListCreateAPIView):
             return [IsFaculty() | IsAdmin()]
         return [IsAdmin() | IsFaculty() | IsStudent()]
 
-# Admin & Faculty: Retrieve, update, delete exam
 class ExamDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     GET: Retrieve exam details
@@ -36,3 +122,46 @@ class ExamDetailView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'DELETE':
             return [IsAdmin()]
         return [IsAdmin() | IsFaculty() | IsStudent()]
+
+# GRADES MANAGEMENT
+class GradeListCreateView(generics.ListCreateAPIView):
+    """
+    GET: List all grades (Admin & Faculty)
+    POST: Add grade for a student (Faculty & Admin, within grading window)
+    """
+    queryset = Grade.objects.select_related('exam', 'enrollment').all()
+    serializer_class = GradeSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsFaculty() | IsAdmin()]
+        return [IsAdmin() | IsFaculty()]
+
+class GradeDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    GET: View grade
+    PUT/PATCH: Update grade (Faculty & Admin, within grading window)
+    DELETE: Delete grade (Admin only)
+    """
+    queryset = Grade.objects.select_related('exam', 'enrollment').all()
+    serializer_class = GradeSerializer
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'PATCH']:
+            return [IsFaculty() | IsAdmin()]
+        if self.request.method == 'DELETE':
+            return [IsAdmin()]
+        return [IsAdmin() | IsFaculty()]
+
+class MyGradesView(generics.ListAPIView):
+    """
+    GET: View logged-in student's grades
+    """
+    serializer_class = GradeSerializer
+    permission_classes = [IsStudent]
+
+    def get_queryset(self):
+        return Grade.objects.filter(
+            enrollment__student=self.request.user.student_profile,
+            exam__result_status__in=['PUBLISHED', 'LOCKED']
+        )

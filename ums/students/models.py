@@ -16,6 +16,7 @@ class StudentProfile(models.Model):
     admission_date = models.DateField(auto_now_add=True)
     gpa = models.FloatField(default=0.0)
     cgpa = models.FloatField(default=0.0)
+    credits_completed = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name} - {self.roll_no}"
