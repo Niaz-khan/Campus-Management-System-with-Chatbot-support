@@ -30,6 +30,5 @@ urlpatterns = [
     path('api/exams/', include('exams.urls')),
     path('api/notifications/', include('notifications.urls')),
     path('api/fees/', include('fees.urls')),
-
-
+    path('api/library/', include('library.urls')),
 ]
