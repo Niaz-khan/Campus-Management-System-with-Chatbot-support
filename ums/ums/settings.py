@@ -57,6 +57,9 @@ INSTALLED_APPS = [
     'cafeteria',
     'events',
     'sports',
+    
+    # third party apps
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
