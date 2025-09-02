@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'fees',
     'library',
     'hostel',
+    'transport', 
 ]
 
 MIDDLEWARE = [
