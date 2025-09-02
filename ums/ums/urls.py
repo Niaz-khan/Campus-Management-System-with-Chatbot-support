@@ -34,5 +34,6 @@ urlpatterns = [
     path('api/hostel/', include('hostel.urls')),
     path('api/transport/', include('transport.urls')),
     path('api/cafeteria/', include('cafeteria.urls')),
+    path('api/events/', include('events.urls')),
 
 ]
