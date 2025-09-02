@@ -1,10 +1,10 @@
 from django.urls import path
-from .views.faculty import (
+from .views import (
     FacultyAttendanceCreateView,
     FacultyAttendanceListView,
     FacultyAttendanceUpdateView
 )
-from .views.student import StudentAttendanceListView
+from .views import StudentAttendanceListView
 
 urlpatterns = [
     # Faculty APIs

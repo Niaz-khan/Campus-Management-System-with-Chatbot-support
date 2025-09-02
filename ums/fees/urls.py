@@ -1,4 +1,5 @@
 from django.urls import path
+
 from .views import (
     FeeCategoryListCreateView,
     InvoiceListCreateView, InvoiceDetailView,
@@ -11,7 +12,7 @@ from .views import (
     OverdueInvoicesReportView
 )
 
-urlpatterns += [
+urlpatterns = [
     path('reports/student/<int:student_id>/', StudentFeeReportView.as_view(), name='student-fee-report'),
     path('reports/batch/<int:batch_id>/', BatchFeeReportView.as_view(), name='batch-fee-report'),
     path('reports/overdue/', OverdueInvoicesReportView.as_view(), name='overdue-fee-report'),

@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum, F
 from students.models import StudentProfile
-from programs.models import Batch
+from academics.models import Batch
 
 
 class StudentFeeReportView(APIView):

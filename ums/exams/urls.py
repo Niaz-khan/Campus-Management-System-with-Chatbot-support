@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import (
     ExamListCreateView, ExamDetailView,
-    GradeListCreateView, GradeDetailView, MyGradesView
+    GradeListCreateView, GradeDetailView, MyGradesView,
+    MyGPAView, PublishExamResultsView, LockExamResultsView
 )
 
 urlpatterns = [

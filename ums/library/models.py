@@ -51,6 +51,8 @@ class BookFine(models.Model):
     fine_amount = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
     is_paid = models.BooleanField(default=False)
     remarks = models.TextField(blank=True, null=True)
+    waived = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)  
 
     def __str__(self):
         return f"Fine for {self.borrow_record.book.title}: {self.fine_amount}"
