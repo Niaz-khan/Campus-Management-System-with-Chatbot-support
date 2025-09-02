@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'library',
     'hostel',
     'transport', 
+    'cafeteria',
 ]
 
 MIDDLEWARE = [

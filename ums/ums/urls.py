@@ -33,5 +33,6 @@ urlpatterns = [
     path('api/library/', include('library.urls')),
     path('api/hostel/', include('hostel.urls')),
     path('api/transport/', include('transport.urls')),
+    path('api/cafeteria/', include('cafeteria.urls')),
 
 ]
