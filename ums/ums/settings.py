@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'sports',
     'parents',
     'analytics',
+    'payroll',
     
     # third party apps
     'drf_yasg',
