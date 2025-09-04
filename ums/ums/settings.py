@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'cafeteria',
     'events',
     'sports',
+    'parents',
     
     # third party apps
     'drf_yasg',

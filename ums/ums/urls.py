@@ -35,21 +35,28 @@ urlpatterns = [
     # Users API
     path('api/users/', include('users.urls')),
     path('api/academics/', include('academics.urls')),
+    
     path('api/students/', include('students.urls')),
     path('api/courses/', include('courses.urls')),
     path('api/enrollments/', include('enrollments.urls')),
+
     path('api/faculty/', include('faculty.urls')),
     path('api/attendance/', include('attendance.urls')),
     path('api/exams/', include('exams.urls')),
+
     path('api/notifications/', include('notifications.urls')),
     path('api/fees/', include('fees.urls')),
     path('api/library/', include('library.urls')),
+
     path('api/hostel/', include('hostel.urls')),
     path('api/transport/', include('transport.urls')),
     path('api/cafeteria/', include('cafeteria.urls')),
-    path('api/events/', include('events.urls')),
 
+    path('api/events/', include('events.urls')),
+    path('api/sports/', include('sports.urls')),
+    path('api/parents/', include('parents.urls')),
 
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
+
