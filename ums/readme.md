@@ -1,222 +1,134 @@
-Perfect 👍 Let’s create a **Software Requirements Specification (SRS)** for your **University Management System (UMS)** based on the requirements we just outlined.
+Got it! You want the **README.md** not only to document what exists but also to **clearly outline the remaining work and a roadmap with plans to complete the UMS**. Below is the **updated README with a detailed completion plan (phases)**.
 
 ---
 
-# 📑 Software Requirements Specification (SRS)
+# **University Management System (UMS)**
 
-**Project Name:** University Management System (UMS)
-**Version:** 1.0
-**Prepared By:** Niaz Khan
-**Date:** September 2025
+A **modular, scalable university ERP system** built with **Django REST Framework (DRF)**, **React**, and **PostgreSQL**, supporting multi-department structure, academic management, payroll, analytics, and role-based dashboards.
 
 ---
 
-## 1. Introduction
+## **Key Features Implemented**
 
-### 1.1 Purpose
-
-The purpose of the University Management System (UMS) is to provide a centralized platform to manage all academic, administrative, and student-related activities in a university. The system will automate processes such as admissions, course registration, exams, fees, attendance, hostel, transport, library, and communication through a single integrated system.
-
-### 1.2 Scope
-
-UMS will serve **Admins, Faculty, Students, Accountants, and Support Staff**. The system will:
-
-* Manage academic operations (programs, batches, courses, exams).
-* Handle student lifecycle from admission to alumni.
-* Provide role-based dashboards and APIs.
-* Integrate finance, hostel, transport, cafeteria, events, sports, and notifications.
-* Ensure scalability, security, and usability.
-
-### 1.3 Definitions, Acronyms, and Abbreviations
-
-* **UMS** – University Management System
-* **DRF** – Django REST Framework
-* **JWT** – JSON Web Token
-* **API** – Application Programming Interface
-* **ERD** – Entity Relationship Diagram
-
-### 1.4 References
-
-* IEEE 830 SRS Standard
-* Django & DRF Documentation
-* PostgreSQL Documentation
+* User authentication with JWT (Admin, Faculty, HOD, Coordinator, Clerk, Student, Parent).
+* Multi-department & multi-faculty structure.
+* Academic programs, batches, courses, enrollments.
+* Attendance (faculty & student APIs).
+* Exams (scheduling, grading, GPA, publishing).
+* Fees (categories, invoices, overdue reports).
+* Hostel & transport management.
+* Library (books, borrow/return, fines).
+* Cafeteria subscriptions & attendance.
+* Sports & gym facilities.
+* Events & certificates.
+* Notifications hub.
+* Parent portal with child tracking.
+* Analytics & reports (admin & faculty dashboards).
+* Payroll & HR (salary templates, payroll runs, payslips).
 
 ---
 
-## 2. Overall Description
+## **Planned Roadmap (Completion Plan)**
 
-### 2.1 Product Perspective
+### **Phase 1 – Core Structure & Modules (Completed)**
 
-UMS is a modular web-based platform. Each functional area (students, exams, hostel, etc.) will be a separate Django app, integrated via APIs and PostgreSQL. React will serve as the frontend.
+* Users & Authentication
+* Academics (Programs, Batches)
+* Students & Faculty
+* Courses & Enrollments
+* Attendance
+* Exams
+* Fees
+* Notifications
+* Events
+* Library
+* Hostel
+* Transport
+* Sports
+* Cafeteria
+* Parent Portal
+* Analytics & Reports
+* Payroll & HR
 
-### 2.2 Product Functions
+### **Phase 2 – Departments & Faculty Structure (In Progress)**
 
-Key modules:
+* [x] Faculty model
+* [x] Department model
+* [x] Department roles (HOD, Coordinator, Clerk, Faculty Member)
+* [x] Department member linking
+* [ ] Integration with Students, Faculty, Courses, Payroll, Analytics
 
-* User & Role Management
-* Academic Programs & Courses
-* Student Records & Enrollment
-* Exams & Grading
-* Attendance Tracking
-* Fees & Payments
-* Library System
-* Hostel Management
-* Transport Management
-* Cafeteria Management
-* Events & Sports
-* Notifications & Communication
-* Research & Alumni (future scope)
+### **Phase 3 – Role-Based Dashboards (Planned)**
 
-### 2.3 User Classes and Characteristics
+* Admin Dashboard – University-wide metrics & controls
+* HOD Dashboard – Department-level control
+* Coordinator Dashboard – Program-level management
+* Faculty Dashboard – Teaching, attendance, grading
+* Clerk Dashboard – Administrative operations
+* Student Dashboard – Attendance, results, fees, timetable
+* Parent Dashboard – Child progress & notifications
 
-* **Admin:** Full control over the system.
-* **Faculty:** Manage courses, attendance, marks.
-* **Student:** View courses, results, notifications.
-* **Accountant:** Manage fees, transactions.
-* **Librarian/Hostel/Transport Officers:** Manage respective modules.
+### **Phase 4 – Advanced Integrations (Planned)**
 
-### 2.4 Operating Environment
-
-* **Backend:** Django + DRF
-* **Frontend:** React
-* **Database:** PostgreSQL
-* **Task Queue:** Celery + Redis
-* **Deployment:** Docker + Apache/Nginx
-* **Hosting:** VPS (Hostinger/AWS)
-
-### 2.5 Design and Implementation Constraints
-
-* Must use **role-based access control**.
-* Must support **API-first design**.
-* Must follow **modular Django app architecture**.
-* Must comply with **data privacy laws** (e.g., GDPR if applicable).
-
-### 2.6 Assumptions and Dependencies
-
-* Users have internet access.
-* University staff trained to use the system.
-* External dependencies: Email/SMS gateway for notifications, payment gateway integration for fees.
+* Chatbot Support (AI-driven helpdesk)
+* Payment Gateway Integration (Stripe, PayPal, Wise)
+* Multi-language Support
+* Audit Logs & Activity Tracking
+* AI-powered Analytics & Predictive Insights
 
 ---
 
-## 3. System Features
+## **API Overview**
 
-### 3.1 User & Role Management
+Each module exposes RESTful APIs under `/api/` (full list in `/docs/api_endpoints.md`).
 
-* JWT-based authentication.
-* Roles: Admin, Faculty, Student, Accountant, Librarian, Hostel Manager, Transport Officer.
-* Profile creation and update.
+Example:
 
-### 3.2 Academic Management
-
-* Create/manage programs, batches, courses.
-* Assign faculty to courses.
-* Academic calendar setup.
-
-### 3.3 Student Management
-
-* Admission workflows.
-* Course registration per semester.
-* Student records and transcripts.
-
-### 3.4 Exams & Grading
-
-* Exam scheduling.
-* Marks entry by faculty.
-* Grade calculation (configurable GPA rules).
-* Transcript generation.
-
-### 3.5 Attendance
-
-* Faculty marks daily attendance.
-* Students view attendance reports.
-
-### 3.6 Fees & Finance
-
-* Fee structures (program-wise, semester-wise).
-* Fine and discount management.
-* Payment tracking and reporting.
-
-### 3.7 Library Management
-
-* Book catalog.
-* Borrow/return.
-* Late fine calculation.
-
-### 3.8 Hostel Management
-
-* Room allocation.
-* Fee integration.
-* Violation tracking.
-
-### 3.9 Transport Management
-
-* Route and stop management.
-* Bus pass allocation.
-* Fee integration.
-
-### 3.10 Cafeteria / Mess
-
-* Meal plan subscription.
-* Billing and fee integration.
-* Attendance tracking (optional).
-
-### 3.11 Events & Sports
-
-* Event creation and student participation.
-* Sports team and match management.
-
-### 3.12 Notifications & Communication
-
-* INFO, ALERT, REMINDER notifications.
-* Automated reminders via Celery.
-
-### 3.13 Research & Alumni (Future Scope)
-
-* Thesis/project tracking.
-* Alumni portal (networking, donations).
+* `/api/departments/` – Faculties, Departments, Roles, Members
+* `/api/attendance/faculty/list/`
+* `/api/exams/grades/my/`
+* `/api/payroll/runs/`
+* `/api/analytics/admin/overview/`
+* `/api/notifications/`
 
 ---
 
-## 4. Non-Functional Requirements
+## **Setup Instructions**
 
-* **Scalability:** Support 10,000+ users concurrently.
-* **Performance:** API response < 300ms.
-* **Security:** Role-based access, JWT, password hashing, HTTPS.
-* **Availability:** 99.9% uptime.
-* **Usability:** Mobile-friendly UI, dark mode.
-* **Maintainability:** Modular apps, reusable components.
-* **Audit Logs:** Track fee payments, grade changes, allocations.
+### Backend (Django)
 
----
+```bash
+git clone <repo_url>
+cd ums
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
 
-## 5. External Interface Requirements
+### Frontend (React)
 
-* **User Interface:** React web app, responsive design.
-* **APIs:** REST APIs via DRF, documented in Swagger/OpenAPI.
-* **Hardware:** Standard university servers (8-core CPU, 16GB RAM minimum).
-* **Software:** Python 3.11+, PostgreSQL 15, Redis, Docker.
-
----
-
-## 6. System Models
-
-### 6.1 ERD (High-Level Entities)
-
-* **User** ↔ **Role**
-* **Program** ↔ **Batch** ↔ **Course**
-* **Student** ↔ **Enrollment** ↔ **Exam** ↔ **Grade**
-* **Student** ↔ **Fees** ↔ **Payment**
-* **Student** ↔ **Library** (Borrow, Fine)
-* **Student** ↔ **Hostel** (Room Allocation)
-* **Student** ↔ **Transport** (Route, Pass)
-* **Student** ↔ **Cafeteria** (Subscription)
-* **Student** ↔ **Event/Sport** (Participation)
-* **Notification** linked with all modules
+```bash
+cd frontend
+npm install
+npm start
+```
 
 ---
 
-## 7. Appendix
+## **Contribution Plan**
 
-* Future integration with AI-powered **Chatbot (LangChain + FAISS)** for student queries.
-* Future mobile app support (React Native).
+* **Weeks 1–2**: Finalize Departments app integration.
+* **Weeks 3–4**: Build and deploy Admin, HOD, Faculty dashboards.
+* **Weeks 5–6**: Add Payment Gateway & Chatbot support.
+* **Weeks 7–8**: Implement full Audit Logging & Multi-language.
+* **Ongoing**: Testing, Documentation, Production hardening.
+
+---
+
+## **License**
+
+MIT License
+
