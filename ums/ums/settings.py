@@ -106,10 +106,20 @@ WSGI_APPLICATION = 'ums.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ums_db',           # Change this to your database name
+        'USER': 'postgres',         # Your DB username
+        'PASSWORD': 'ums1234',# Your DB password
+        'HOST': 'localhost',        # Or your DB server IP
+        'PORT': '5432',             # Default PostgreSQL port
     }
 }
 

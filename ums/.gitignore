@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Django specific
+*.log
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+static_root/
+
+# Migrations (optional: only if you want to ignore them)
+# **/migrations/*.py
+# !**/migrations/__init__.py
+
+# Test & coverage
+.coverage
+.tox/
+.nox/
+.pytest_cache/
+*.cover
+coverage.xml
+*.hypothesis/
+
+# IDE & editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Other
+*.tmp
+*.temp
+*.orig
+*.rej
