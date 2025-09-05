@@ -61,6 +61,8 @@ INSTALLED_APPS = [
     'analytics',
     'payroll',
     'org_structure',
+    'dashboards',
+
     # third party apps
     'drf_yasg',
 ]
