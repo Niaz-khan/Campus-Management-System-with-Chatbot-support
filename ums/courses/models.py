@@ -1,6 +1,7 @@
 from django.db import models
 from academics.models import Program, Batch
 from django.conf import settings
+from org_structure.models import Campus, Department
 
 class Course(models.Model):
     """
@@ -8,6 +9,9 @@ class Course(models.Model):
     """
     program = models.ForeignKey(Program, on_delete=models.CASCADE, related_name="courses")
     batch = models.ForeignKey(Batch, on_delete=models.SET_NULL, null=True, blank=True, related_name="courses")
+    campus = models.ForeignKey(Campus, on_delete=models.SET_NULL, null=True, related_name="courses")
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, related_name="courses")
+    
     code = models.CharField(max_length=20, unique=True)  # e.g., CS101
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)

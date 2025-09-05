@@ -58,6 +58,7 @@ urlpatterns = [
 
     path('api/analytics/', include('analytics.urls')),
     path('api/payroll/', include('payroll.urls')),
+    path('api/org-structure/', include('org_structure.urls')),
 
 
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

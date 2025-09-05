@@ -19,9 +19,18 @@ class IsStudent(permissions.BasePermission):
 # -------- Faculty/Admin APIs --------
 
 class RouteListCreateView(generics.ListCreateAPIView):
-    queryset = TransportRoute.objects.all()
     serializer_class = TransportRouteSerializer
-    permission_classes = [IsAdminOrFaculty]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = TransportRoute.objects.select_related('campus').all()
+
+        campus_id = self.request.query_params.get('campus_id')
+        if campus_id:
+            queryset = queryset.filter(campus_id=campus_id)
+
+        # Department filtering is optional here unless you have dept-based transport control
+        return queryset
 
 
 class RouteDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -37,9 +46,18 @@ class VehicleListCreateView(generics.ListCreateAPIView):
 
 
 class VehicleDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Vehicle.objects.select_related('route').all()
-    serializer_class = VehicleSerializer
-    permission_classes = [IsAdminOrFaculty]
+    serializer_class = TransportRouteSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = TransportRoute.objects.select_related('campus').all()
+
+        campus_id = self.request.query_params.get('campus_id')
+        if campus_id:
+            queryset = queryset.filter(campus_id=campus_id)
+
+        # Department filtering is optional here unless you have dept-based transport control
+        return queryset
 
 
 class IssueTransportPassView(generics.CreateAPIView):
