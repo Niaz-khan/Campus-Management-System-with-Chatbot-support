@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from academics.models import Batch, Program
+from org_structure.models import Campus, Department
 
 class StudentProfile(models.Model):
     """
@@ -17,6 +18,9 @@ class StudentProfile(models.Model):
     gpa = models.FloatField(default=0.0)
     cgpa = models.FloatField(default=0.0)
     credits_completed = models.PositiveIntegerField(default=0)
+    campus = models.ForeignKey(Campus, on_delete=models.SET_NULL, null=True, related_name="students")
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, related_name="students")
+    
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name} - {self.roll_no}"

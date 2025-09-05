@@ -5,6 +5,7 @@ from django.utils import timezone
 from .models import Event, EventRegistration, EventCertificate
 from .serializers import EventSerializer, EventRegistrationSerializer, EventCertificateSerializer
 from notifications.utils import send_notification
+from org_structure.models import DepartmentMember
 
 class IsAdminOrFaculty(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -17,9 +18,30 @@ class IsStudent(permissions.BasePermission):
 
 # Faculty/Admin APIs
 class EventListCreateView(generics.ListCreateAPIView):
-    queryset = Event.objects.all()
+    """
+    
+    """
     serializer_class = EventSerializer
-    permission_classes = [IsAdminOrFaculty]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Event.objects.select_related('campus', 'department').all()
+
+        campus_id = self.request.query_params.get('campus_id')
+        department_id = self.request.query_params.get('department_id')
+
+        if campus_id:
+            queryset = queryset.filter(campus_id=campus_id)
+        if department_id:
+            queryset = queryset.filter(department_id=department_id)
+
+        user = self.request.user
+        if hasattr(user, 'departmentmember'):
+            member = DepartmentMember.objects.filter(user=user, is_active=True).first()
+            if member and member.role.name in ['HOD', 'COORDINATOR']:
+                queryset = queryset.filter(department=member.department)
+
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)

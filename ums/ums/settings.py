@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'parents',
     'analytics',
     'payroll',
-    
+    'org_structure',
     # third party apps
     'drf_yasg',
 ]

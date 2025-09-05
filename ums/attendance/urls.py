@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     FacultyAttendanceCreateView,
-    FacultyAttendanceListView,
+    AttendanceFacultyListView,
     FacultyAttendanceUpdateView
 )
 from .views import StudentAttendanceListView
@@ -9,7 +9,7 @@ from .views import StudentAttendanceListView
 urlpatterns = [
     # Faculty APIs
     path('faculty/mark/', FacultyAttendanceCreateView.as_view(), name='faculty-attendance-mark'),
-    path('faculty/list/', FacultyAttendanceListView.as_view(), name='faculty-attendance-list'),
+    path('faculty/list/', AttendanceFacultyListView.as_view(), name='faculty-attendance-list'),
     path('faculty/update/<int:pk>/', FacultyAttendanceUpdateView.as_view(), name='faculty-attendance-update'),
 
     # Student APIs

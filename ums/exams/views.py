@@ -113,8 +113,29 @@ class ExamListCreateView(generics.ListCreateAPIView):
     GET: List all exams (Admin, Faculty, Students)
     POST: Create a new exam (Faculty & Admin)
     """
-    queryset = Exam.objects.select_related('course', 'created_by').all()
     serializer_class = ExamSerializer
+    permission_classes = [IsAdmin | IsFaculty]
+
+    def get_queryset(self):
+        queryset = Exam.objects.select_related(
+            'course', 'course__campus', 'course__department'
+        ).all()
+
+        campus_id = self.request.query_params.get('campus_id')
+        department_id = self.request.query_params.get('department_id')
+
+        if campus_id:
+            queryset = queryset.filter(course__campus_id=campus_id)
+        if department_id:
+            queryset = queryset.filter(course__department_id=department_id)
+
+        user = self.request.user
+        if hasattr(user, 'departmentmember'):
+            member = DepartmentMember.objects.filter(user=user, is_active=True).first()
+            if member and member.role.name in ['HOD', 'COORDINATOR']:
+                queryset = queryset.filter(course__department=member.department)
+
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
@@ -130,8 +151,11 @@ class ExamDetailView(generics.RetrieveUpdateDestroyAPIView):
     PUT/PATCH: Update exam (Faculty & Admin)
     DELETE: Delete exam (Admin only)
     """
-    queryset = Exam.objects.select_related('course', 'created_by').all()
+    queryset = Exam.objects.select_related(
+        'course', 'course__campus', 'course__department'
+    ).all()
     serializer_class = ExamSerializer
+    permission_classes = [IsAdmin | IsFaculty]
 
     def get_permissions(self):
         if self.request.method in ['PUT', 'PATCH']:
