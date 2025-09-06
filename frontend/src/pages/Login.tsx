@@ -1,75 +1,85 @@
-// Importing React hooks and axios for API requests
-import { useState } from "react";
+import React, { useState } from "react";
+// Replace alert with navigation
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-// The Login component (function component)
-export default function Login() {
-  // useState creates state variables: these store input values and errors
-  const [email, setEmail] = useState("");        // Stores the email input
-  const [password, setPassword] = useState("");  // Stores the password input
-  const [error, setError] = useState("");        // Stores any login error message
+const Login: React.FC = () => {
+  // Form state
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  // Function that runs when the user submits the login form
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevents page refresh when form is submitted
+  // UI state
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
-      // Sending POST request to your Django login API
+      // Send login request
       const response = await axios.post("http://127.0.0.1:8000/api/users/login/", {
-        email,      // sending email from state
-        password    // sending password from state
+        email,
+        password,
       });
 
-      // Extracting data from API response
+      // Extract tokens & user info
       const { access, refresh, user } = response.data;
 
-      // Storing JWT tokens and user info in localStorage (browser storage)
-      localStorage.setItem("access", access);
-      localStorage.setItem("refresh", refresh);
-      localStorage.setItem("user", JSON.stringify(user)); // save user object as JSON string
+      // Store in localStorage
+      localStorage.setItem("accessToken", access);
+      localStorage.setItem("refreshToken", refresh);
+      localStorage.setItem("user", JSON.stringify(user));
 
-      // For now, just show a welcome message (later we will redirect)
-      alert(`Welcome ${user.first_name}!`);
-
+      // Redirect to dashboard (temporary: just alert for now)
+      alert(`Welcome, ${user.first_name}! Role: ${user.role}`);
+      navigate("/dashboard"); // Redirect to dashboard
     } catch (err: any) {
-      // If login fails, set error message from backend or a default one
-      setError(err.response?.data?.detail || "Login failed");
+      setError(err.response?.data?.detail || "Invalid credentials");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // JSX = the UI of this page
   return (
-    <div>
-      <h1>Login</h1>
-
-      {/* Show error message if exists */}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {/* Login form */}
-      <form onSubmit={handleLogin}>
-        {/* Email input field */}
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}                        // connects input value to state
-          onChange={(e) => setEmail(e.target.value)} // updates state when user types
-          required
-        />
-        <br />
-
-        {/* Password input field */}
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <br />
-
-        {/* Submit button */}
-        <button type="submit">Login</button>
-      </form>
+    <div className="min-h-screen flex items-center justify-center bg-neutral">
+      <div className="bg-white p-8 rounded-card shadow-soft w-full max-w-md">
+        <h1 className="text-2xl font-heading font-bold text-center mb-6">Campus UMS Login</h1>
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium">Email</label>
+            <input
+              type="email"
+              className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Password</label>
+            <input
+              type="password"
+              className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-primary text-white py-2 rounded-md hover:bg-blue-700 transition"
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+      </div>
     </div>
   );
-}
+};
+
+export default Login;
