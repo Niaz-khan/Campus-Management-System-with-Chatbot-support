@@ -65,9 +65,11 @@ INSTALLED_APPS = [
 
     # third party apps
     'drf_yasg',
+    'corsheaders', 
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -78,6 +80,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'ums.urls'
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+]
+
 
 TEMPLATES = [
     {

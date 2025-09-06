@@ -32,6 +32,7 @@ class DepartmentRole(models.Model):
         ('FACULTY', 'Faculty Member'),
     ]
     name = models.CharField(max_length=100, choices=ROLE_CHOICES, unique=True)
+    can_manage_members = models.BooleanField(default=False)  # NEW
 
     def __str__(self):
         return self.get_name_display()

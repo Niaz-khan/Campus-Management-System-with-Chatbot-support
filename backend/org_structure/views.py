@@ -4,29 +4,30 @@ from .serializers import (
     CampusSerializer, DepartmentSerializer,
     DepartmentRoleSerializer, DepartmentMemberSerializer
 )
+from .permissions import CanManageMembers
 
 class CampusListCreateView(generics.ListCreateAPIView):
     queryset = Campus.objects.all()
     serializer_class = CampusSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [CanManageMembers]
 
 
 class CampusDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Campus.objects.all()
     serializer_class = CampusSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [CanManageMembers]
 
 
 class DepartmentListCreateView(generics.ListCreateAPIView):
     queryset = Department.objects.select_related('campus').all()
     serializer_class = DepartmentSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [CanManageMembers]
 
 
 class DepartmentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Department.objects.select_related('campus').all()
     serializer_class = DepartmentSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [CanManageMembers]
 
 
 class DepartmentRoleListView(generics.ListAPIView):
@@ -38,10 +39,10 @@ class DepartmentRoleListView(generics.ListAPIView):
 class DepartmentMemberListCreateView(generics.ListCreateAPIView):
     queryset = DepartmentMember.objects.select_related('department','user','role').all()
     serializer_class = DepartmentMemberSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [CanManageMembers]
 
 
 class DepartmentMemberDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = DepartmentMember.objects.select_related('department','user','role').all()
     serializer_class = DepartmentMemberSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [CanManageMembers]
